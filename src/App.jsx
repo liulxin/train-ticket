@@ -3,22 +3,16 @@ import "./App.css";
 
 const BatteryContext = createContext(90);
 // const BatteryContext = createContext();
-const OnlineContext = createContext();
 
 class Leaf extends Component {
+
+  static contextType = BatteryContext
+
   render() {
+    const battery = this.context
+    
     return (
-      <BatteryContext.Consumer>
-        {battery => (
-          <OnlineContext.Consumer>
-            {online => (
-              <h1>
-                battery => {battery}, online => {String(online)}
-              </h1>
-            )}
-          </OnlineContext.Consumer>
-        )}
-      </BatteryContext.Consumer>
+       <h1>battery => {battery}</h1>
     );
   }
 }
@@ -31,38 +25,25 @@ class Middle extends Component {
 
 class App extends Component {
   state = {
-    battery: 60,
-    online: false
+    battery: 60
   };
 
   render() {
-    const { battery, online } = this.state;
+    const { battery } = this.state;
 
     return (
       <BatteryContext.Provider value={battery}>
-        <OnlineContext.Provider value={online}>
-          <button
-            type="button"
-            onClick={() =>
-              this.setState({
-                battery: battery - 1
-              })
-            }
-          >
-            press
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              this.setState({
-                online: !online
-              })
-            }
-          >
-            change
-          </button>
-          <Middle />
-        </OnlineContext.Provider>
+        <button
+          type="button"
+          onClick={() =>
+            this.setState({
+              battery: battery - 1
+            })
+          }
+        >
+          press
+        </button>
+        <Middle />
       </BatteryContext.Provider>
     );
   }
