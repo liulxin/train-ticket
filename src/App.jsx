@@ -1,35 +1,54 @@
-import React, { Component, lazy, Suspense } from "react";
+import React, { Component, PureComponent, memo } from "react";
 import "./App.css";
 
-const About = lazy(() => import(/* webpackChunkName: "about"*/ "./About"));
+// class Foo extends Component {
+//   shouldComponentUpdate(nextProps, nextState) {
+//     if (nextProps.name === this.props.name) {
+//       return false;
+//     }
+//   }
+//   render() {
+//     console.log("Foo render");
+//     return null;
+//   }
+// }
 
-// ErrorBoundary
-// componentDidCatch
+// class Foo extends PureComponent {
+//   render() {
+//     console.log("Foo render");
+//     return <div>{this.props.person.age}</div>;
+//   }
+// }
+
+const Foo = memo(function Foo(props) {
+  console.log("Foo render");
+  return <div>{props.person.age}</div>;
+});
 
 class App extends Component {
   state = {
-    hasError: false
+    count: 0,
+    person: {
+      age: 1
+    }
   };
-
-  componentDidCatch(error, errorInfo) {
-    console.log(error, errorInfo)
-  }
-
-  static getDerivedStateFromError() {
-    return {
-      hasError: true
-    }
-  }
-
   render() {
-    if (this.state.hasError) {
-      return <div>this is error</div>;
-    }
+    const person = this.state.person;
     return (
       <div>
-        <Suspense fallback={<div>this is loading...</div>}>
-          <About></About>
-        </Suspense>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          add count
+        </button>
+        <button
+          onClick={() => {
+            person.age++;
+            this.setState({ person: Object.assign({}, person) });
+          }}
+        >
+          add person.age
+        </button>
+        {this.state.count}
+        <Foo name="mike" person={person} />
       </div>
     );
   }
