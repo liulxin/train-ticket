@@ -1,50 +1,36 @@
-import React, { Component, createContext } from "react";
+import React, { Component, lazy, Suspense } from "react";
 import "./App.css";
 
-const BatteryContext = createContext(90);
-// const BatteryContext = createContext();
+const About = lazy(() => import(/* webpackChunkName: "about"*/ "./About"));
 
-class Leaf extends Component {
-
-  static contextType = BatteryContext
-
-  render() {
-    const battery = this.context
-    
-    return (
-       <h1>battery => {battery}</h1>
-    );
-  }
-}
-
-class Middle extends Component {
-  render() {
-    return <Leaf />;
-  }
-}
+// ErrorBoundary
+// componentDidCatch
 
 class App extends Component {
   state = {
-    battery: 60
+    hasError: false
   };
 
-  render() {
-    const { battery } = this.state;
+  componentDidCatch(error, errorInfo) {
+    console.log(error, errorInfo)
+  }
 
+  static getDerivedStateFromError() {
+    return {
+      hasError: true
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>this is error</div>;
+    }
     return (
-      <BatteryContext.Provider value={battery}>
-        <button
-          type="button"
-          onClick={() =>
-            this.setState({
-              battery: battery - 1
-            })
-          }
-        >
-          press
-        </button>
-        <Middle />
-      </BatteryContext.Provider>
+      <div>
+        <Suspense fallback={<div>this is loading...</div>}>
+          <About></About>
+        </Suspense>
+      </div>
     );
   }
 }
