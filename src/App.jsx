@@ -1,57 +1,39 @@
-import React, { Component, PureComponent, memo } from "react";
-import "./App.css";
+import React, { Component, useState } from "react";
 
-// class Foo extends Component {
-//   shouldComponentUpdate(nextProps, nextState) {
-//     if (nextProps.name === this.props.name) {
-//       return false;
-//     }
-//   }
-//   render() {
-//     console.log("Foo render");
-//     return null;
-//   }
-// }
-
-// class Foo extends PureComponent {
-//   render() {
-//     console.log("Foo render");
-//     return <div>{this.props.person.age}</div>;
-//   }
-// }
-
-const Foo = memo(function Foo(props) {
-  console.log("Foo render");
-  return <div>{props.person.age}</div>;
-});
-
-class App extends Component {
+class App2 extends Component {
   state = {
-    count: 0,
-    person: {
-      age: 1
-    }
+    count: 0
   };
+
   render() {
-    const person = this.state.person;
+    const { count } = this.state;
     return (
-      <div>
-        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
-          add count
-        </button>
-        <button
-          onClick={() => {
-            person.age++;
-            this.setState({ person: Object.assign({}, person) });
-          }}
-        >
-          add person.age
-        </button>
-        {this.state.count}
-        <Foo name="mike" person={person} />
+      <div
+        onClick={() =>
+          this.setState({
+            count: count + 1
+          })
+        }
+      >
+        Click {count}
       </div>
     );
   }
+}
+
+function App(props) {
+  // const [count, setCount] = useState(0);
+  // 延迟初始化
+  const [count, setCount] = useState(() => {
+    console.log('init')
+    return props.defaultCount || 0
+  });
+
+  return (
+    <div onClick={() => setCount(count + 1)}>
+      Click {count}
+    </div>
+  );
 }
 
 export default App;
