@@ -1,37 +1,34 @@
-import React, { Component, useState, createContext, useContext } from "react";
+import React, { Component, useState, useMemo, useCallback, memo } from "react";
 
-const CountContext = createContext();
-
-class Foo extends Component {
-  static contextType = CountContext;
-  render() {
-    const count = this.context;
-    return (
-      // <CountContext.Consumer>
-      //   {
-      //     count => (<div>{count}</div>)
-      //   }
-      // </CountContext.Consumer>
-      <div>{count}</div>
-    );
-  }
-}
-
-function Counter() {
-  const count = useContext(CountContext);
-  return <div>{count}</div>;
-}
+const Counter = memo(function Counter(props) {
+  console.log("counter render");
+  return <div onClick={props.onClick}>{props.count}</div>;
+});
 
 function App(props) {
   const [count, setCount] = useState(0);
 
+  const double = useMemo(() => {
+    return count * 2;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count === 3]);
+
+  // const onClick = () => {
+  //   console.log('onclick')
+  // }
+
+  // useMemo(() => fn)
+  // useCallback(fn)
+  const onClick = useCallback(() => {
+    console.log("onclick");
+  }, []);
+
   return (
     <div>
-      <div onClick={() => setCount(count + 1)}>Click {count}</div>
-      <CountContext.Provider value={count}>
-        <Foo />
-        <Counter />
-      </CountContext.Provider>
+      <div onClick={() => setCount(count + 1)}>
+        Click {count}, doublue: {double}
+      </div>
+      <Counter count={double} onClick={onClick} />
     </div>
   );
 }
