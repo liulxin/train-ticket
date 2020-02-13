@@ -1,18 +1,8 @@
-const express = require('express')
+const express = require('express');
+const path = require('path');
+const apiMocker = require('mocker-api');
 
-const app = express()
+const app = express();
 
-app.get('/', (req, res) => {
-  res.status(200)
-  res.send('hello')
-  res.end()
-})
-
-app.get('/rest', (req, res) => {
-  res.json({
-    result: 1,
-    msg: 'hello express'
-  })
-})
-
-app.listen(5000)
+apiMocker(app, path.resolve('./mocker/mocker.js'))
+app.listen(5000);

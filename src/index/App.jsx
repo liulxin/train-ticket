@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { connect } from "react-redux";
-
+import { bindActionCreators } from "redux";
 import Header from "../common/Header";
 import DepartDate from "./DepartDate";
 import HighSpeed from "./HighSpeed";
@@ -8,30 +8,63 @@ import Journey from "./Journey";
 import Submit from "./Submit";
 
 import "./App.css";
+import CitySelector from "../common/CitySelector";
+
+import { exchangeFromTo, showCitySelector, hideCitySelector, fetchCityData, setSelectedCity } from "./actions";
 
 function App(props) {
+  const {
+    from,
+    to,
+    isCitySelectorVisible,
+    cityData,
+    isLoadingCityData,
+    dispatch
+  } = props;
+
   const onBack = useCallback(() => {
     window.history.back();
   }, []);
+
+  const cbs = useMemo(
+    () =>
+      bindActionCreators(
+        {
+          exchangeFromTo,
+          showCitySelector
+        },
+        dispatch
+      ),
+    [dispatch]
+  );
+
+  const citySelectorCbs = useMemo(() => bindActionCreators({
+    onBack: hideCitySelector,
+    fetchCityData,
+    onSelect: setSelectedCity
+  }, dispatch), [dispatch])
 
   return (
     <div>
       <div className="header-wrapper">
         <Header title="火车票" onBack={onBack}></Header>
       </div>
-      <Journey></Journey>
-      <DepartDate></DepartDate>
-      <HighSpeed></HighSpeed>
-      <Submit></Submit>
+      <form className="form">
+        <Journey from={from} to={to} {...cbs}></Journey>
+        <DepartDate></DepartDate>
+        <HighSpeed></HighSpeed>
+        <Submit></Submit>
+      </form>
+      <CitySelector
+        show={isCitySelectorVisible}
+        cityData={cityData}
+        isLoading={isLoadingCityData}
+        {...citySelectorCbs}
+      />
     </div>
   );
 }
 
-export default connect(
-  function mapStateToProps(state) {
-    return {};
-  },
-  function mapDispatchToProps(dispatch) {
-    return {};
-  }
-)(App);
+export default connect(function mapStateToProps(state) {
+  return state;
+})(App);
