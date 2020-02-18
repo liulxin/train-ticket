@@ -1,12 +1,12 @@
-import React, { memo, useState, useCallback } from "react";
+import React, { memo, useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
 import "./Bottom.css";
 import { ORDER_DEPART } from "./constant";
-import Slider from './Slider'
+import Slider from "./Slider";
 
 const Filter = memo(function Filter(props) {
-  const { name, checked,value, toggle } = props;
+  const { name, checked, value, toggle } = props;
   return (
     <li
       className={classnames({ checked: checked })}
@@ -20,21 +20,24 @@ Filter.propTypes = {
   name: PropTypes.string.isRequired,
   checked: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
-  toggle: PropTypes.func.isRequired,
+  toggle: PropTypes.func.isRequired
 };
 
 const Option = memo(function(props) {
   const { title, options, checkedMap, update } = props;
 
-  const toggle = useCallback(value => {
-    const newCheckedMap = { ...checkedMap };
-    if (value in checkedMap) {
-      delete newCheckedMap[value];
-    } else {
-      newCheckedMap[value] = true;
-    }
-    update(newCheckedMap);
-  }, [checkedMap, update]);
+  const toggle = useCallback(
+    value => {
+      const newCheckedMap = { ...checkedMap };
+      if (value in checkedMap) {
+        delete newCheckedMap[value];
+      } else {
+        newCheckedMap[value] = true;
+      }
+      update(newCheckedMap);
+    },
+    [checkedMap, update]
+  );
 
   return (
     <div className="option">
@@ -136,32 +139,85 @@ const BottomModal = memo(function BottomModal(props) {
     }
   ];
 
-  const [localDepartTimeStart,setLocalDepartTimeStart] = useState(departTimeStart)
-  const [localDepartTimeEnd,setLocalDepartTimeEnd] = useState(departTimeEnd)
-  const [localArriveTimeStart,setLocalArriveTimeStart] = useState(arriveTimeStart)
-  const [localArriveTimeEnd,setLocalArriveTimeEnd] = useState(arriveTimeEnd)
+  const [localDepartTimeStart, setLocalDepartTimeStart] = useState(
+    departTimeStart
+  );
+  const [localDepartTimeEnd, setLocalDepartTimeEnd] = useState(departTimeEnd);
+  const [localArriveTimeStart, setLocalArriveTimeStart] = useState(
+    arriveTimeStart
+  );
+  const [localArriveTimeEnd, setLocalArriveTimeEnd] = useState(arriveTimeEnd);
+
+  function sure() {
+    setCheckedTicketTypes(localCheckedTicketTypes);
+    setCheckedTrainTypes(localCheckedTrainTypes);
+    setCheckedDepartStations(localCheckedDepartStations);
+    setCheckedArriveStations(localCheckedArriveStations);
+    setDepartTimeStart(localDepartTimeStart);
+    setDepartTimeEnd(localDepartTimeEnd);
+    setArriveTimeStart(localArriveTimeStart);
+    setArriveTimeEnd(localArriveTimeEnd);
+
+    toggleIsFiltersVisible();
+  }
+
+  const isRestDisabled = useMemo(() => {
+    return (
+      Object.keys(localCheckedTicketTypes).length === 0 &&
+      Object.keys(localCheckedTrainTypes).length === 0 &&
+      Object.keys(localCheckedDepartStations).length === 0 &&
+      Object.keys(localCheckedArriveStations).length === 0 &&
+      localDepartTimeStart === 0 &&
+      localDepartTimeEnd === 24 &&
+      localArriveTimeStart === 0 &&
+      localArriveTimeEnd === 24
+    );
+  }, [localArriveTimeEnd, localArriveTimeStart, localCheckedArriveStations, localCheckedDepartStations, localCheckedTicketTypes, localCheckedTrainTypes, localDepartTimeEnd, localDepartTimeStart]);
+
+  function reset() {
+    if (isRestDisabled) {
+      return;
+    }
+    setLocalCheckedTicketTypes({});
+    setLocalCheckedTrainTypes({});
+    setLocalCheckedDepartStations({});
+    setLocalCheckedArriveStations({});
+    setLocalDepartTimeStart(0);
+    setLocalDepartTimeEnd(24);
+    setLocalArriveTimeStart(0);
+    setLocalArriveTimeEnd(24);
+  }
 
   return (
     <div className="bottom-modal">
       <div className="bottom-dialog">
         <div className="bottom-dialog-content">
           <div className="title">
-            <span className="reset">重置</span>
-            <span className="ok">确定</span>
+            <span
+              className={classnames("reset", {
+                disabled: isRestDisabled
+              })}
+              onClick={reset}
+            >
+              重置
+            </span>
+            <span className="ok" onClick={sure}>
+              确定
+            </span>
           </div>
           <div className="options">
             {optionGroup.map(group => (
               <Option {...group} key={group.title} />
             ))}
-            <Slider 
-              title='出发时间'
+            <Slider
+              title="出发时间"
               currentStartHours={localDepartTimeStart}
               currentEndHours={localDepartTimeEnd}
               onStartChanged={setLocalDepartTimeStart}
               onEndChanged={setLocalDepartTimeEnd}
             />
-               <Slider 
-              title='到达时间'
+            <Slider
+              title="到达时间"
               currentStartHours={localArriveTimeStart}
               currentEndHours={localArriveTimeEnd}
               onStartChanged={setLocalArriveTimeStart}
@@ -231,6 +287,19 @@ export default function Bottom(props) {
     setArriveTimeStart,
     setArriveTimeEnd
   } = props;
+  const noChecked = useMemo(() => {
+    return (
+      Object.keys(checkedTicketTypes).length === 0 &&
+      Object.keys(checkedTrainTypes).length === 0 &&
+      Object.keys(checkedDepartStations).length === 0 &&
+      Object.keys(checkedArriveStations).length === 0 &&
+      departTimeStart === 0 &&
+      departTimeEnd === 24 &&
+      arriveTimeStart === 0 &&
+      arriveTimeEnd === 24
+    );
+  }, [arriveTimeEnd, arriveTimeStart, checkedArriveStations, checkedDepartStations, checkedTicketTypes, checkedTrainTypes, departTimeEnd, departTimeStart]);
+
   return (
     <div className="bottom">
       <div className="bottom-filters">
@@ -258,11 +327,11 @@ export default function Bottom(props) {
         </span>
         <span
           className={classnames("item", {
-            "item-on": isFiltersVisible
+            "item-on": isFiltersVisible || !noChecked
           })}
           onClick={toggleIsFiltersVisible}
         >
-          <i className="icon">&#xf0f7;</i>
+          <i className="icon">{noChecked ? '\uf0f7': '\uf446'}</i>
           综合筛选
         </span>
       </div>
