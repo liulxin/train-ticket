@@ -3,7 +3,7 @@ import thunk from "redux-thunk";
 import { h0 } from "../common/fp";
 import reducers from "./reducers";
 
-import {ORDER_DEPART} from './constant'
+import { ORDER_DEPART } from "./constant";
 
 export default createStore(
   combineReducers(reducers),

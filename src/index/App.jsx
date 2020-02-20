@@ -6,7 +6,7 @@ import DepartDate from "./DepartDate";
 import HighSpeed from "./HighSpeed";
 import Journey from "./Journey";
 import Submit from "./Submit";
-import {h0} from '../common/fp'
+import { h0 } from "../common/fp";
 import "./App.css";
 import CitySelector from "../common/CitySelector";
 import DateSelector from "../common/DateSelector.jsx";
@@ -85,24 +85,34 @@ function App(props) {
     );
   }, [dispatch]);
 
-  const onSelectDate = useCallback((day) => {
-    if(!day || (day < h0())) {
-      return
-    }
-    dispatch(setDepartDate(day))
-    dispatch(hideDateSelector())
-  },[dispatch])
+  const onSelectDate = useCallback(
+    day => {
+      if (!day || day < h0()) {
+        return;
+      }
+      dispatch(setDepartDate(day));
+      dispatch(hideDateSelector());
+    },
+    [dispatch]
+  );
 
-  const HighSpeedCbs = useMemo(() => bindActionCreators({
-    toggle: toggleHighSpeed
-  }, dispatch), [dispatch])
+  const HighSpeedCbs = useMemo(
+    () =>
+      bindActionCreators(
+        {
+          toggle: toggleHighSpeed
+        },
+        dispatch
+      ),
+    [dispatch]
+  );
 
   return (
     <div>
       <div className="header-wrapper">
         <Header title="火车票" onBack={onBack}></Header>
       </div>
-      <form className="form" action='./query.html'>
+      <form className="form" action="./query.html">
         <Journey from={from} to={to} {...cbs}></Journey>
         <DepartDate time={departDate} {...departDateCbs}></DepartDate>
         <HighSpeed {...HighSpeedCbs} highSpeed={highSpeed}></HighSpeed>
@@ -117,7 +127,7 @@ function App(props) {
       <DateSelector
         show={isDateSelectorVisible}
         {...dateSelectorCbs}
-        onSelect= {onSelectDate}
+        onSelect={onSelectDate}
       />
     </div>
   );

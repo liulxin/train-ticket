@@ -17,7 +17,7 @@ const ListItem = memo(function ListItem(props) {
   } = props;
 
   const url = useMemo(() => {
-   return new URI("ticket.html")
+    return new URI("ticket.html")
       .setSearch("aStation", aStation)
       .setSearch("dStation", dStation)
       .setSearch("trainNumber", trainNumber)

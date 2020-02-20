@@ -26,7 +26,6 @@ import {
   toggleIsFiltersVisible,
   toggleOrderType,
   toggleOnlyTickets,
-
   setCheckedTicketTypes,
   setCheckedTrainTypes,
   setCheckedDepartStations,

@@ -77,7 +77,7 @@ export function setSelectedCity(city) {
     } else {
       dispatch(setTo(city));
     }
-    dispatch(hideCitySelector())
+    dispatch(hideCitySelector());
   };
 }
 
@@ -118,10 +118,10 @@ export function fetchCityData() {
     }
 
     // cache
-    const cache = JSON.parse(localStorage.getItem('city_data_cache') || '{}')
-    if(Date.now() < cache.expires) {
-      dispatch(setCityData(cache.data))
-      return
+    const cache = JSON.parse(localStorage.getItem("city_data_cache") || "{}");
+    if (Date.now() < cache.expires) {
+      dispatch(setCityData(cache.data));
+      return;
     }
 
     dispatch(setIsLoadingCityData(true));
@@ -129,15 +129,18 @@ export function fetchCityData() {
     fetch("/rest/cities?_" + Date.now())
       .then(res => res.json())
       .then(cityData => {
-        dispatch(setCityData(cityData))
-        localStorage.setItem('city_data_cache', JSON.stringify({
-          expires: Date.now() + 60 * 1000,
-          data: cityData
-        }))
-        dispatch(setIsLoadingCityData(false))
+        dispatch(setCityData(cityData));
+        localStorage.setItem(
+          "city_data_cache",
+          JSON.stringify({
+            expires: Date.now() + 60 * 1000,
+            data: cityData
+          })
+        );
+        dispatch(setIsLoadingCityData(false));
       })
       .catch(err => {
-        dispatch(setIsLoadingCityData(false))
+        dispatch(setIsLoadingCityData(false));
       });
   };
 }

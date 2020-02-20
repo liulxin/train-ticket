@@ -74,7 +74,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "format": "eslint src/**/*.{jsx,js} --fix"
+    "format": "prettier src/**/*.{jsx,js,css,md} --write && eslint src/**/*.{jsx,js} --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -96,7 +96,12 @@
   },
   "lint-staged": {
     "*.{jsx,js}": [
+      "prettier --write",
       "eslint --fix",
+      "git add"
+    ],
+    "*.{css,md}": [
+      "prettier --write",
       "git add"
     ]
   },
@@ -170,6 +175,7 @@
   "devDependencies": {
     "eslint-plugin-react-hooks": "0.0.0-241c4467e",
     "husky": "^4.2.3",
-    "lint-staged": "^10.0.7"
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1"
   }
 }
